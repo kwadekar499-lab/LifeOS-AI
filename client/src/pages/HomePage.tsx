@@ -1,18 +1,25 @@
+import { Logo } from "@/components/landing/Logo";
+import { AnimatedBackground } from "@/components/landing/AnimatedBackground";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { Footer } from "@/components/layout/Footer";
+
 function HomePage() {
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold">LifeOS AI</h1>
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#0A0A0F] text-white">
+      <AnimatedBackground />
 
-        <p className="mt-4 text-xl text-gray-400">
-          Your AI-Powered Second Brain
-        </p>
+      <header className="relative z-10 px-6 py-8">
+        <div className="mx-auto flex max-w-5xl items-center">
+          <Logo />
+        </div>
+      </header>
 
-        <button className="mt-8 rounded-xl bg-white px-6 py-3 text-black font-semibold">
-          Get Started
-        </button>
-      </div>
-    </main>
+      <main className="relative z-10 flex flex-1 flex-col">
+        <HeroSection />
+      </main>
+
+      <Footer />
+    </div>
   );
 }
 

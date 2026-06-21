@@ -1,7 +1,12 @@
-import HomePage from "./pages/HomePage";
+import { AppProviders } from "@/app/providers/AppProviders";
+import { AppRoutes } from "@/app/routes";
 
 function App() {
-  return <HomePage />;
+  return (
+    <AppProviders>
+      <AppRoutes />
+    </AppProviders>
+  );
 }
 
 export default App;

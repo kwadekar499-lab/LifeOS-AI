@@ -6,6 +6,7 @@
     "module": "esnext",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
 
     "baseUrl": ".",
     "paths": {
@@ -22,7 +23,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src"]
 }
