@@ -4,6 +4,11 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-background: #0a0a0f;
   --color-foreground: #ffffff;
+  --color-shell-sidebar: #0c0c12;
+  --color-shell-surface: #12121a;
+  --sidebar-width: 240px;
+  --sidebar-width-collapsed: 68px;
+  --topbar-height: 3.5rem;
 }
 
 @layer base {

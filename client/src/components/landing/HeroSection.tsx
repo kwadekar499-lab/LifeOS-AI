@@ -1,7 +1,9 @@
 import { memo } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { APP_NAME, APP_TAGLINE, CTA_LABEL } from "@/constants/app";
+import { ROUTES } from "@/constants/routes";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -53,27 +55,30 @@ export const HeroSection = memo(function HeroSection() {
         {APP_TAGLINE}
       </motion.p>
 
-      <motion.div
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-        custom={0.35}
-      >
-        <motion.button
-          type="button"
-          className="focus-ring group mt-10 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-[#0A0A0F] transition-shadow hover:shadow-[0_0_40px_rgba(255,255,255,0.12)]"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          aria-label={`${CTA_LABEL} with ${APP_NAME}`}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.35}
         >
-          {CTA_LABEL}
-          <ArrowRight
-            className="size-4 transition-transform group-hover:translate-x-0.5"
-            aria-hidden="true"
-          />
-        </motion.button>
-      </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            <Link
+              to={ROUTES.APP_HOME}
+              className="focus-ring group mt-10 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-[#0A0A0F] transition-shadow hover:shadow-[0_0_40px_rgba(255,255,255,0.12)]"
+              aria-label={`${CTA_LABEL} with ${APP_NAME}`}
+            >
+              {CTA_LABEL}
+              <ArrowRight
+                className="size-4 transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </Link>
+          </motion.div>
+        </motion.div>
     </section>
   );
 });

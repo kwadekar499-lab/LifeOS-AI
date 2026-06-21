@@ -24,7 +24,7 @@ function NotFoundPage() {
         </p>
 
         <Link
-          to={ROUTES.HOME}
+          to={ROUTES.LANDING}
           className="focus-ring group mt-8 inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-2.5 text-sm font-medium text-white ring-1 ring-white/10 transition-colors hover:bg-white/15"
         >
           <ArrowLeft
