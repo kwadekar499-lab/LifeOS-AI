@@ -1,1 +1,2 @@
-export { default } from "@/modules/knowledge/pages/KnowledgePage";
+export { default } from "@/features/knowledge/pages/KnowledgePage";
+

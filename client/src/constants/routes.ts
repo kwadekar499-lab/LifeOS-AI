@@ -1,5 +1,7 @@
 export const ROUTES = {
   LANDING: "/",
+  LOGIN: "/login",
+  REGISTER: "/register",
   APP: "/app",
   APP_HOME: "/app/home",
   APP_MEMORY: "/app/memory",
@@ -10,6 +12,7 @@ export const ROUTES = {
   APP_SETTINGS: "/app/settings",
   NOT_FOUND: "*",
 } as const;
+
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
 

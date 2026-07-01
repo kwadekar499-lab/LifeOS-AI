@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { ShellLogo } from "@/components/shell/ShellLogo";
 import { MAIN_NAV_ITEMS, SETTINGS_NAV_ITEM } from "@/constants/navigation";
-import { useShellStore } from "@/store/shellStore";
 import { cn } from "@/utils/cn";
+import { useShellStore } from "@/stores/shellStore";
 import type { NavItem } from "@/constants/navigation";
+
 
 type SidebarNavItemProps = {
   item: NavItem;

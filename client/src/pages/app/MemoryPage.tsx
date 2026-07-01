@@ -1,1 +1,2 @@
-export { default } from "@/modules/memory/pages/MemoryPage";
+export { default } from "@/features/memory/pages/MemoryPage";
+

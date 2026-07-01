@@ -6,9 +6,12 @@ import { CommandPalette } from "@/components/shell/CommandPalette";
 import { PageTransition } from "@/components/shell/PageTransition";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
+import { GlobalSearch } from "@/features/search/components/GlobalSearch";
+import { useSearchStore } from "@/features/search/store/search-store";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { MOBILE_QUERY, useMediaQuery } from "@/hooks/useMediaQuery";
-import { useShellStore } from "@/store/shellStore";
+import { useShellStore } from "@/stores/shellStore";
+import { NotificationToast } from "@/components/common/NotificationToast";
 
 export default function AppShell() {
   const location = useLocation();
@@ -23,6 +26,13 @@ export default function AppShell() {
   }, [toggleCommandPalette]);
 
   useKeyboardShortcut("k", handleToggleCommandPalette);
+  
+  const openSearch = useSearchStore((state) => state.openSearch);
+  const handleOpenSearch = useCallback(() => {
+    openSearch();
+  }, [openSearch]);
+  
+  useKeyboardShortcut("f", handleOpenSearch);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#0A0A0F] text-white">
@@ -64,6 +74,9 @@ export default function AppShell() {
       </div>
 
       <CommandPalette />
+      <GlobalSearch />
+      <NotificationToast />
     </div>
   );
 }
+

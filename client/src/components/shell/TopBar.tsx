@@ -1,7 +1,9 @@
 import { memo } from "react";
 import { Bell, Menu, Search } from "lucide-react";
 import { ShellLogo } from "@/components/shell/ShellLogo";
-import { useShellStore } from "@/store/shellStore";
+import { useShellStore } from "@/stores/shellStore";
+import { useSearchStore } from "@/features/search/store/search-store";
+
 
 function getModKeyLabel(): string {
   if (typeof navigator === "undefined") return "Ctrl";
@@ -18,6 +20,7 @@ export const TopBar = memo(function TopBar({
   showMenuButton = false,
 }: TopBarProps) {
   const openCommandPalette = useShellStore((state) => state.openCommandPalette);
+  const openSearch = useSearchStore((state) => state.openSearch);
   const modKey = getModKeyLabel();
 
   return (
@@ -40,12 +43,13 @@ export const TopBar = memo(function TopBar({
       <div className="ml-auto flex items-center gap-1.5">
         <button
           type="button"
-          className="focus-ring hidden items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-1.5 text-sm text-white/40 ring-1 ring-white/[0.06] transition-colors hover:bg-white/[0.06] hover:text-white/60 sm:inline-flex"
-          aria-label="Search (coming soon)"
+          onClick={openSearch}
+          className="focus-ring inline-flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-1.5 text-sm text-white/40 ring-1 ring-white/[0.06] transition-colors hover:bg-white/[0.06] hover:text-white/60"
+          aria-label="Open search"
         >
           <Search className="size-3.5" aria-hidden="true" />
           <span>Search</span>
-          <kbd className="ml-2 rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-white/30">
+          <kbd className="ml-2 rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-white/30 hidden sm:inline">
             {modKey}F
           </kbd>
         </button>
@@ -58,7 +62,7 @@ export const TopBar = memo(function TopBar({
         >
           <Search className="size-3.5 sm:hidden" aria-hidden="true" />
           <span className="hidden sm:inline">Commands</span>
-          <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-white/30">
+          <kbd className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-white/30 hidden sm:inline">
             {modKey}K
           </kbd>
         </button>

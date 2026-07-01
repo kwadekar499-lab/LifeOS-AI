@@ -1,1 +1,2 @@
-export { default } from "@/modules/assistant/pages/AssistantPage";
+export { default } from "@/features/assistant/pages/AssistantPage";
+

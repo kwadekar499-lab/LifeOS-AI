@@ -1,0 +1,7 @@
+export enum StreamState {
+  STARTED = 'STARTED',
+  STREAMING = 'STREAMING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+}

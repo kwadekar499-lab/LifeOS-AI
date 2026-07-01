@@ -1,0 +1,383 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  username      String    @unique
+  fullName      String
+  passwordHash  String
+  avatar        String?
+  timezone      String    @default("UTC")
+  locale        String    @default("en")
+  emailVerified Boolean   @default(false)
+  provider      String    @default("local") // local, google, github
+  providerId    String?
+  preferences   Json?
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  lastLoginAt   DateTime?
+
+  // Relations
+  conversations   Conversation[]
+  tasks           Task[]
+  knowledge       Knowledge[]
+  memories        Memory[]
+  journalEntries  JournalEntry[]
+  files           File[]
+  sessions        Session[]
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  documents       Document[]
+  documentChunks  DocumentChunk[]
+  embeddings      Embedding[]
+
+  @@map("users")
+  @@index([email])
+  @@index([username])
+  @@index([provider, providerId])
+}
+
+model Conversation {
+  id            String    @id @default(uuid())
+  userId        String
+  workspaceId   String?
+  title         String?
+  summary       String?
+  lastMessage   String?
+  lastMessageAt DateTime?
+  isPinned      Boolean   @default(false)
+  isArchived    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages   Message[]
+
+  @@map("conversations")
+  @@index([userId])
+  @@index([userId, lastMessageAt])
+  @@index([userId, isPinned])
+  @@index([userId, deletedAt])
+}
+
+enum MessageStatus {
+  PENDING
+  STREAMING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model Message {
+  id             String        @id @default(uuid())
+  conversationId String
+  userId         String
+  role           String        // user, assistant, system
+  content        String        @db.Text
+  status         MessageStatus @default(PENDING)
+  provider       String?
+  model          String?
+  tokenInput     Int?
+  tokenOutput    Int?
+  latency        Float?
+  attachments    Json?
+  toolCalls      Json?
+  metadata       Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+  @@index([conversationId, createdAt])
+  @@index([conversationId, deletedAt])
+  @@index([userId, createdAt])
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  userId      String
+  title       String
+  description String?   @db.Text
+  status      String    @default("pending") // pending, in_progress, completed, cancelled
+  priority    String    @default("medium") // low, medium, high, urgent
+  labels      Json?
+  dueDate     DateTime?
+  completedAt DateTime?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+  @@index([userId, status, priority])
+  @@index([userId, dueDate])
+}
+
+model Knowledge {
+  id           String    @id @default(uuid())
+  userId       String
+  title        String
+  content      String    @db.Text
+  summary      String?   @db.Text
+  category     String    @default("general")
+  tags         String[]  @default([])
+  source       String?   @default("manual")
+  sourceUrl    String?
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("knowledge")
+  @@index([userId])
+  @@index([userId, category])
+  @@index([userId, deletedAt])
+  @@index([userId, createdAt])
+  @@index([userId, title])
+}
+
+model Memory {
+  id           String    @id @default(uuid())
+  userId       String
+  title        String
+  content      String    @db.Text
+  category     String    @default("general") // preference, project, fact, goal, habit, relationship, decision, ai_generated, general
+  importance   Int       @default(5) // 1-10
+  tags         String[]  @default([])
+  source       String    @default("manual")
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("memories")
+  @@index([userId])
+  @@index([userId, category])
+  @@index([userId, importance])
+  @@index([userId, deletedAt])
+  @@index([userId, createdAt])
+}
+
+model JournalEntry {
+  id           String    @id @default(uuid())
+  userId       String
+  title        String?
+  content      String    @db.Text
+  summary      String?   @db.Text
+  mood         String?   // happy, sad, neutral, excited, etc.
+  tags         String[]  @default([])
+  entryDate    DateTime  @default(now())
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("journal_entries")
+  @@index([userId])
+  @@index([userId, entryDate])
+  @@index([userId, deletedAt])
+  @@index([userId, createdAt])
+  @@index([userId, title])
+}
+
+model File {
+  id           String    @id @default(uuid())
+  userId       String
+  originalName String
+  storedName   String
+  mimeType     String
+  extension    String
+  size         Int
+  checksum     String
+  storagePath  String
+  status       String    @default("ready") // ready, processing, failed
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents    Document[]
+
+  @@map("files")
+  @@index([userId])
+  @@index([userId, mimeType])
+  @@index([userId, createdAt])
+  @@index([userId, deletedAt])
+  @@index([checksum])
+}
+
+model Document {
+  id              String    @id @default(uuid())
+  fileId          String
+  userId          String
+  title           String
+  content         String    @db.Text
+  pageCount       Int?
+  wordCount       Int
+  characterCount  Int
+  language        String?
+  parsingStatus   String    @default("pending") // pending, processing, completed, failed
+  parseError      String?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  // Relations
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  file     File          @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  chunks   DocumentChunk[]
+
+  @@map("documents")
+  @@index([userId])
+  @@index([userId, parsingStatus])
+  @@index([userId, createdAt])
+  @@index([fileId])
+  @@index([fileId, deletedAt])
+}
+
+model DocumentChunk {
+  id              String    @id @default(uuid())
+  documentId      String
+  fileId          String
+  userId          String
+  chunkIndex      Int
+  content         String    @db.Text
+  startOffset     Int
+  endOffset       Int
+  estimatedTokens Int
+  characterCount  Int
+  checksum        String
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  embedding Embedding?
+
+  @@map("document_chunks")
+  @@index([userId])
+  @@index([documentId])
+  @@index([fileId])
+  @@index([userId, documentId])
+  @@unique([documentId, chunkIndex])
+}
+
+model Embedding {
+  id              String   @id @default(uuid())
+  chunkId         String   @unique
+  userId          String
+  fileId          String
+  documentId      String
+  embedding       Json     @db.JsonB
+  provider        String
+  model           String
+  dimensions      Int
+  tokenCount      Int?
+  latencyMs       Float?
+  costEstimate    Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chunk    DocumentChunk @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+
+  @@map("embeddings")
+  @@index([userId])
+  @@index([fileId])
+  @@index([documentId])
+  @@index([userId, fileId])
+  @@index([provider, model])
+}
+
+model Session {
+  id              String    @id @default(uuid())
+  userId          String
+  refreshTokenHash String   @unique
+  device          String?
+  ipAddress       String?
+  userAgent       String?
+  expiresAt       DateTime
+  lastUsedAt      DateTime  @default(now())
+  revokedAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+  @@index([userId, revokedAt])
+  @@index([refreshTokenHash])
+  @@index([expiresAt])
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  type      String    // info, warning, error, success
+  title     String
+  message   String    @db.Text
+  data      Json?
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+  @@index([userId, isRead, createdAt])
+}
+
+model AuditLog {
+  id         String    @id @default(uuid())
+  userId     String?
+  action     String    // create, read, update, delete, login, logout, etc.
+  resource   String    // user, task, conversation, etc.
+  resourceId String?
+  oldValues  Json?
+  newValues  Json?
+  ipAddress  String?
+  userAgent   String?
+  metadata   Json?
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+  @@index([userId, createdAt])
+  @@index([action, resource])
+  @@index([createdAt])
+}

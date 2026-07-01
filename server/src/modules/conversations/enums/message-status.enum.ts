@@ -1,0 +1,7 @@
+export enum MessageStatus {
+  PENDING = 'PENDING',
+  STREAMING = 'STREAMING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+}
